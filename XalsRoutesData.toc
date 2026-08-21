@@ -1,0 +1,18 @@
+## Interface: 120100, 120007
+## Title: Xal's Routes Data
+## Version: @project-version@
+## Notes: Pre-collected gathering node data you can import into Xal's Xpedited Routes.
+## Author: XalaMental
+## X-License: All Rights Reserved
+## X-Curse-Project-ID: 1661613
+## SavedVariables: XalsRoutesDataDB
+## IconTexture: Interface\AddOns\XalsRoutesData\Icon.png
+
+Bootstrap.lua
+BrandStyle.lua
+Data.lua
+Import.lua
+WhatsNew.lua
+Engine.lua
+SettingsPanel.lua
+ChatCommands.lua
