@@ -1,0 +1,21 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# Build/packaging artifacts
+*.zip
+/dist/
+/build/
+
+# Python bytecode cache - generated locally any time discord_changelog.py
+# gets run/imported directly, never meant to be tracked
+__pycache__/
+*.pyc
+
+# WoW SavedVariables shouldn't ever live in the addon repo
+WTF/
