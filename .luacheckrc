@@ -10,6 +10,7 @@ globals = {
     "XalsRoutesDataDB",
     "SLASH_XALSROUTESDATA1",
     "SlashCmdList",
+    "StaticPopupDialogs", -- a real mutable table addons add popup entries to
 }
 
 read_globals = {
@@ -22,6 +23,7 @@ read_globals = {
     "GameFontHighlightSmall",
     "InputBoxTemplate",
     "UISpecialFrames",
+    "IsControlKeyDown",
     "tinsert",
 }
 
