@@ -60,9 +60,13 @@ end
 
 -- ── Font paths ────────────────────────────────────────────────
 -- Header/title font: Simply Sans Bold (bundled, SIL OFL). Body/label font:
--- Fira Sans Medium (bundled, SIL OFL). Both ship in this addon's own
+-- Fira Sans Medium (bundled, SIL OFL). Both must ship in this addon's own
 -- Fonts/ folder (Fonts/CustomFont.ttf, Fonts/FiraSans-Medium.ttf, plus their
--- two LICENSE.txt files).
+-- two LICENSE.txt files) - copy them from any existing addon that already
+-- has them (e.g. XalsQuestCompass/Fonts/) rather than reusing a stock
+-- Blizzard font. NOT Fonts\MORPHEUS.TTF/ARIALN.TTF - those were this
+-- template's stale default until 2026-08-14, caught live in-game on Xal's
+-- Mumblings (wrong title font, no bundled fonts at all).
 Brand.TITLE_FONT_PATH = "Interface\\AddOns\\XalsRoutesData\\Fonts\\CustomFont.ttf"
 Brand.BODY_FONT_PATH = "Interface\\AddOns\\XalsRoutesData\\Fonts\\FiraSans-Medium.ttf"
 
@@ -292,7 +296,8 @@ function Brand.MakeCheckbox(parent, size)
     -- against the font's full line-height box (ascender/descender padding
     -- included), not the glyph's actual ink, so it visually drifts off-true-
     -- center. Blizzard's own checkmark texture centers exactly where told,
-    -- no font-metrics guesswork.
+    -- no font-metrics guesswork. This superseded the FontString "X" version
+    -- 2026-08-13; this template still had the old version until 2026-08-14.
     local check = cb:CreateTexture(nil, "OVERLAY")
     check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     check:SetVertexColor(r, g, b, 1)
@@ -318,10 +323,10 @@ function Brand.MakeCheckbox(parent, size)
 
     return cb
 end
-
 -- ── ApplyBackgroundImage()  ─ the shared dark-swirl texture art, sitting on
 -- top of the flat background color (BORDER layer, below everything else -
--- border/dividers/text all draw at ARTWORK/OVERLAY, above this). Call AFTER
+-- border/dividers/text all draw at ARTWORK/OVERLAY, above this), same
+-- treatment Compendium already uses on its own panels. Call AFTER
 -- ApplyBackground so the flat color shows through anywhere the image
 -- doesn't cover. Returns the texture so callers can hide/show it (e.g. a
 -- frameless mode toggle) without hunting for it again.
@@ -339,6 +344,29 @@ end
 -- (an auto-selected, read-only edit box) instead. One popup definition
 -- shared by every call site.
 Brand.DISCORD_URL = "https://discord.gg/9SwrQDJeCe"
+
+StaticPopupDialogs["XALSROUTESDATA_COPY_URL"] = {
+    text = "%s",
+    button1 = "Close",
+    hasEditBox = true,
+    editBoxWidth = 260,
+    OnShow = function(self, data)
+        -- Current clients expose this as `EditBox` (capital E); the lowercase
+        -- `editBox` this was originally written against no longer exists and
+        -- threw "attempt to index field 'editBox' (a nil value)". Both are
+        -- checked so this can't break again either way.
+        local eb = self.EditBox or self.editBox
+        if not eb then return end
+        eb:SetText(data or Brand.DISCORD_URL)
+        eb:HighlightText()
+        eb:SetFocus()
+    end,
+    EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
 
 function Brand.MakeDiscordLink(parent)
     local btn = CreateFrame("Button", nil, parent)
@@ -364,18 +392,32 @@ end
 
 -- ── MakeTextLink() / MakeCloseButton() ───────────────────────────
 -- Text-link style controls (accent gold, brightening to white on hover)
--- rather than boxed buttons.
+-- rather than boxed buttons. Ported from Routes, where the boxed "X"/button
+-- style was replaced for exactly this reason - confirmed preference
+-- 2026-08-16: "it doesn't create such a visual blemish".
 --
 -- Neither sets its own anchor point; every call site anchors it itself, same
 -- convention as Brand.MakeButton.
-function Brand.MakeTextLink(parent, text, onClick)
+--
+-- fontSize is optional - omit it for the original GameFontHighlightSmall look
+-- (used by Close, and anything else that hasn't asked to be bigger). Passing
+-- one switches the label to the addon's own body font at that size instead,
+-- for a call site that wants a larger click target than the default.
+function Brand.MakeTextLink(parent, text, onClick, fontSize)
     local btn = CreateFrame("Button", nil, parent)
-    btn:SetHeight(20)
+    btn:SetHeight(fontSize and (fontSize + 10) or 20)
 
-    local label = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    label:SetPoint("CENTER")
-    label:SetText(text)
-    label:SetTextColor(Brand.ACCENT[1], Brand.ACCENT[2], Brand.ACCENT[3], 1)
+    local label
+    if fontSize then
+        label = Brand.FS(btn, text, Brand.BODY_FONT_PATH, fontSize, nil,
+            Brand.ACCENT[1], Brand.ACCENT[2], Brand.ACCENT[3])
+        label:SetPoint("CENTER")
+    else
+        label = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        label:SetPoint("CENTER")
+        label:SetText(text)
+        label:SetTextColor(Brand.ACCENT[1], Brand.ACCENT[2], Brand.ACCENT[3], 1)
+    end
     btn.label = label
     btn:SetWidth(math.max(40, label:GetStringWidth() + 8))
 
@@ -416,7 +458,7 @@ function Brand.ShowCopyBox(caption, url)
         tinsert(UISpecialFrames, "XalsRoutesDataCopyBox")
 
         Brand.ApplyBackground(f)
-        Brand.ApplyBackgroundImage(f)
+        if Brand.ApplyBackgroundImage then Brand.ApplyBackgroundImage(f) end
         Brand.DrawBorder(f)
 
         f.caption = Brand.FS(f, "", Brand.TITLE_FONT_PATH, 15, nil,
@@ -438,9 +480,21 @@ function Brand.ShowCopyBox(caption, url)
             self.locked = false
         end)
         box:SetScript("OnEscapePressed", function() f:Hide() end)
+
+        -- Close once the link has actually been copied. There is no "copied"
+        -- event, but the EditBox has focus and receives key events, so Ctrl+C
+        -- is detectable directly. Checked on key UP so the copy itself has
+        -- already happened before the box disappears.
+        box:SetScript("OnKeyUp", function(_, key)
+            if key == "C" and IsControlKeyDown() then
+                f:Hide()
+            end
+        end)
+
         f.box = box
 
-        local hint = Brand.FS(f, "Ctrl+C to copy", Brand.BODY_FONT_PATH, 11, nil, 0.6, 0.6, 0.6)
+        local hint = Brand.FS(f, "Ctrl+C to copy - this closes when you do",
+            Brand.BODY_FONT_PATH, 11, nil, 0.6, 0.6, 0.6)
         hint:SetPoint("TOPLEFT", box, "BOTTOMLEFT", 2, -6)
 
         local close = Brand.MakeCloseButton(f, function() f:Hide() end)
