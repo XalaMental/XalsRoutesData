@@ -9,7 +9,7 @@ ready-made data pack straight into Routes instead.
 ## Features
 
 - Import pre-collected node data directly into Xal's Xpedited Routes with one click.
-- Ships an initial pack of 770 gathering nodes across 19 zones - current expansion only for now, no Classic or older-expansion zones yet.
+- Ships an initial pack of 936 gathering nodes across 22 zones - current expansion only for now, no Classic or older-expansion zones yet.
 - New data updates are offered right on the What's New splash the moment they land.
 
 ## Commands
