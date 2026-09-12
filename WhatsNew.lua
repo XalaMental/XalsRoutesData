@@ -7,7 +7,7 @@
 -- .toc at runtime) against the last version this player actually saw, and
 -- only pops up when they differ.
 --
--- Claude already writes CHANGELOG.md by hand before every release, in Dev,
+-- CHANGELOG.md already gets written by hand before every release, in Dev,
 -- before Jason ever commits/pushes anything - same moment, update WHATS_NEW
 -- below (the "date" field and the intro/sections content) to match. The
 -- version NUMBER shown on the splash does NOT need updating here - it's
@@ -21,12 +21,17 @@ local Brand = addonTable.BrandStyle
 -- ── Update this block every release to match CHANGELOG.md ──────
 -- (no "version" field here on purpose - see note above)
 W.WHATS_NEW = {
-    date = "August 20, 2026",
+    date = "September 12, 2026",
     intro = "Pre-collected gathering node data you can import straight into Xal's Xpedited Routes.",
     sections = {
         { heading = "New", items = {
-            "Initial data pack - hit Import Now below to add it to your Routes database.",
-            "Current expansion only for now - no Classic or older-expansion zones yet.",
+            "Bigger data pack - 1,033 nodes across 29 zones now, up from 936 across 22. Hit Import Now below to grab the update.",
+        } },
+        { heading = "Changed", items = {
+            "New look - deep indigo background, burnt-orange accent, matching the rest of the Xal's addons.",
+        } },
+        { heading = "Fixed", items = {
+            "This splash's own text was overlapping itself - fixed.",
         } },
     },
 }
@@ -60,17 +65,32 @@ local MAX_FH = 560 -- clamp so an unusually long release note can't run off-scre
 local function BuildFrame(installedVersion)
     local f = CreateFrame("Frame", "XalsRoutesDataWhatsNewFrame", UIParent)
     f:SetSize(FW, 360) -- placeholder height; set for real below once content is laid out
-    f:SetPoint("CENTER")
+    -- Distinct default offset + SetToplevel + saved position, per the suite-wide
+    -- window rule: a bare SetPoint("CENTER") makes this land on top of another
+    -- Xal's addon's window whenever two are open at once.
     f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    f:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        if type(XalsRoutesDataDB) == "table" then
+            local point, _, relPoint, x, y = self:GetPoint()
+            XalsRoutesDataDB.whatsNewPos = { point = point, relPoint = relPoint, x = x, y = y }
+        end
+    end)
     f:SetClampedToScreen(true)
 
+    local pos = type(XalsRoutesDataDB) == "table" and XalsRoutesDataDB.whatsNewPos or nil
+    if pos and pos.point then
+        f:SetPoint(pos.point, UIParent, pos.relPoint, pos.x, pos.y)
+    else
+        f:SetPoint("CENTER", UIParent, "CENTER", -340, -180)
+    end
+
     Brand.ApplyBackground(f)
-    Brand.ApplyBackgroundImage(f)
     Brand.DrawBorder(f)
 
     local data = W.WHATS_NEW
@@ -88,32 +108,44 @@ local function BuildFrame(installedVersion)
 
     Brand.DrawDivider(f, 30, 78, FW - 60)
 
+    -- Wrapped text MUST have its width set before its text, or the string is
+    -- measured as a single unwrapped line and GetStringHeight comes back one
+    -- line short. Every two-line bullet then advances half as far as it needs
+    -- to and the whole splash stacks on top of itself. Brand.FS sets the text
+    -- for you, so wrapped strings are built empty here and filled in after
+    -- the width and word-wrap are in place.
+    local function WrappedFS(parent, text, width, indent, size, flags, r, g, b)
+        local fs = Brand.FS(parent, "", Brand.BODY_FONT_PATH, size, flags, r, g, b)
+        fs:SetWidth(width)
+        fs:SetJustifyH("LEFT")
+        fs:SetWordWrap(true)
+        fs:SetPoint("TOPLEFT", parent, "TOPLEFT", indent, 0) -- real Y set by caller
+        fs:SetText(text)
+        return fs
+    end
+
     local y = 92
     if data.intro and data.intro ~= "" then
-        local intro = Brand.FS(f, data.intro, Brand.BODY_FONT_PATH, 12, "", 0.85, 0.85, 0.85)
+        local intro = WrappedFS(f, data.intro, FW - 60, 30, 12, "", 0.85, 0.85, 0.85)
+        intro:ClearAllPoints()
         intro:SetPoint("TOPLEFT", f, "TOPLEFT", 30, -y)
-        intro:SetWidth(FW - 60)
-        intro:SetJustifyH("LEFT")
-        intro:SetWordWrap(true)
-        y = y + (intro:GetStringHeight() or 14) + 14
+        y = y + math.max(intro:GetStringHeight() or 0, 14) + 14
     end
 
     for _, section in ipairs(data.sections or {}) do
         local head = Brand.FS(f, section.heading, Brand.BODY_FONT_PATH, 13, "OUTLINE",
             Brand.ACCENT[1], Brand.ACCENT[2], Brand.ACCENT[3])
         head:SetPoint("TOPLEFT", f, "TOPLEFT", 30, -y)
-        y = y + 20
+        y = y + 22
 
         for _, item in ipairs(section.items or {}) do
-            local bullet = Brand.FS(f, "-  " .. item, Brand.BODY_FONT_PATH, 12, "",
+            local bullet = WrappedFS(f, "-  " .. item, FW - 76, 36, 12, "",
                 Brand.GOLD[1], Brand.GOLD[2], Brand.GOLD[3])
+            bullet:ClearAllPoints()
             bullet:SetPoint("TOPLEFT", f, "TOPLEFT", 36, -y)
-            bullet:SetWidth(FW - 76)
-            bullet:SetJustifyH("LEFT")
-            bullet:SetWordWrap(true)
-            y = y + (bullet:GetStringHeight() or 14) + 6
+            y = y + math.max(bullet:GetStringHeight() or 0, 14) + 6
         end
-        y = y + 10
+        y = y + 12
     end
 
     -- Import button - only when the baked-in data pack is actually newer
