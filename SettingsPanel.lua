@@ -18,6 +18,7 @@ local function BuildWindow()
     if window then return window end
 
     local f = CreateFrame("Frame", "XalsRoutesDataOptionsWindow", UIParent)
+    tinsert(UISpecialFrames, "XalsRoutesDataOptionsWindow")
     f:SetSize(WIN_W, WIN_H)
     f:SetFrameStrata("HIGH")
     f:SetToplevel(true)
@@ -34,15 +35,16 @@ local function BuildWindow()
     end)
     f:SetClampedToScreen(true)
 
+    -- Distinct default offset so this can't land on top of another Xal's
+    -- addon's window; Armoire's options window already occupies (-300, 60).
     local pos = type(XalsRoutesDataDB) == "table" and XalsRoutesDataDB.optionsPos or nil
     if pos and pos.point then
         f:SetPoint(pos.point, UIParent, pos.relPoint, pos.x, pos.y)
     else
-        f:SetPoint("CENTER", UIParent, "CENTER", -300, 60)
+        f:SetPoint("CENTER", UIParent, "CENTER", 340, 180)
     end
 
     Brand.ApplyBackground(f)
-    Brand.ApplyBackgroundImage(f)
     Brand.DrawBorder(f)
 
     Brand.Title(f, "Xal's Routes Data", 22, "TOP", f, "TOP", 0, -Brand.SAFE_MARGIN - 6)
