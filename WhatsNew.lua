@@ -21,17 +21,14 @@ local Brand = addonTable.BrandStyle
 -- ── Update this block every release to match CHANGELOG.md ──────
 -- (no "version" field here on purpose - see note above)
 W.WHATS_NEW = {
-    date = "September 12, 2026",
+    date = "October 25, 2026",
     intro = "Pre-collected gathering node data you can import straight into Xal's Xpedited Routes.",
     sections = {
         { heading = "New", items = {
-            "Bigger data pack - 1,033 nodes across 29 zones now, up from 936 across 22. Hit Import Now below to grab the update.",
+            "Bigger data pack - 1,361 nodes across 31 zones now, up from 1,033 across 29. Hit Import Now below to grab the update.",
         } },
         { heading = "Changed", items = {
-            "New look - deep indigo background, burnt-orange accent, matching the rest of the Xal's addons.",
-        } },
-        { heading = "Fixed", items = {
-            "This splash's own text was overlapping itself - fixed.",
+            "New look - dark brick-red accent, near-black indigo dividers and borders, new title/body fonts, matching the rest of the Xal's addons.",
         } },
     },
 }
@@ -91,7 +88,7 @@ local function BuildFrame(installedVersion)
     end
 
     Brand.ApplyBackground(f)
-    Brand.DrawBorder(f)
+    Brand.DrawBorder(f, 1)
 
     local data = W.WHATS_NEW
     Brand.Title(f, "What's New", 26, "TOP", f, "TOP", 0, -24)
@@ -106,7 +103,7 @@ local function BuildFrame(installedVersion)
     verLine:SetPoint("TOP", f, "TOP", 0, -58)
     verLine:SetJustifyH("CENTER")
 
-    Brand.DrawDivider(f, 30, 78, FW - 60)
+    Brand.DrawHeaderDivider(f, 30, 78, FW - 60)
 
     -- Wrapped text MUST have its width set before its text, or the string is
     -- measured as a single unwrapped line and GetStringHeight comes back one
