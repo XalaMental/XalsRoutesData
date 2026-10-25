@@ -1,5 +1,17 @@
 # Xal's Routes Data - Changelog
 
+## 1.2.0 - October 25, 2026
+
+---
+
+Been trying to nail down a style I'm actually happy with for a while now - something minimalistic that still looks good, not just stripped down for the sake of it. I like darker coloring, so that's the direction I landed on: a deep brick red instead of the old orange, near-black indigo lines instead of the muted brown, and new fonts to match. I also kept farming the whole time, so the data pack's a good bit bigger too. Thanks for being part of the Xal family - hope you like where this is headed.
+
+### 🆕 New
+- Data pack refreshed - 1,361 pre-collected gathering nodes across 31 zones, up from 1,033 across 29.
+
+### 🎨 Changed
+- New look: dark brick-red accent, near-black indigo dividers and borders, new title/body fonts - matches the rest of the Xal's addons now.
+
 ## 1.1.0 - September 12, 2026
 
 ---
