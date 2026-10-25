@@ -20,10 +20,10 @@ the author. If you'd like to use, adapt, or build on any of it, ask first.
 
 ## 2. Bundled Fonts
 
-`Fonts/CustomFont.ttf` (Simply Sans Bold) and `Fonts/FiraSans-Medium.ttf`
-(Fira Sans Medium) are licensed under the SIL Open Font License, not the
-terms above — see `Fonts/SimplySans-LICENSE.txt` and
-`Fonts/FiraSans-LICENSE.txt` for the full text. They're redistributed here
+`Fonts/Cinzel-Bold.ttf` (Cinzel Bold) and `Fonts/Inter-Regular.ttf` /
+`Fonts/Inter-SemiBold.ttf` (Inter) are licensed under the SIL Open Font
+License, not the terms above — see `Fonts/Cinzel-LICENSE.txt` and
+`Fonts/Inter-LICENSE.txt` for the full text. They're redistributed here
 exactly as their own licenses permit.
 
 ---
@@ -33,5 +33,5 @@ exactly as their own licenses permit.
 | Content | License | Can I fork/reuse it? |
 |---|---|---|
 | Addon code and custom art | All Rights Reserved | No — ask the author first |
-| `Fonts/CustomFont.ttf` | SIL Open Font License | Yes — under the OFL's terms |
-| `Fonts/FiraSans-Medium.ttf` | SIL Open Font License | Yes — under the OFL's terms |
+| `Fonts/Cinzel-Bold.ttf` | SIL Open Font License | Yes — under the OFL's terms |
+| `Fonts/Inter-Regular.ttf` / `Inter-SemiBold.ttf` | SIL Open Font License | Yes — under the OFL's terms |
