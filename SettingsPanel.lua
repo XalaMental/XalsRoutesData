@@ -45,14 +45,14 @@ local function BuildWindow()
     end
 
     Brand.ApplyBackground(f)
-    Brand.DrawBorder(f)
+    Brand.DrawBorder(f, 1)
 
     Brand.Title(f, "Xal's Routes Data", 22, "TOP", f, "TOP", 0, -Brand.SAFE_MARGIN - 6)
 
     local discord = Brand.MakeDiscordLink(f)
     discord:SetPoint("TOPRIGHT", f, "TOPRIGHT", -Brand.SAFE_MARGIN, -Brand.SAFE_MARGIN)
 
-    Brand.DrawDivider(f, 0, 66, WIN_W - (Brand.SAFE_MARGIN * 2))
+    Brand.DrawHeaderDivider(f, 0, 66, WIN_W - (Brand.SAFE_MARGIN * 2))
 
     local note = Brand.FS(f, "New data updates get offered on the What's New splash. Run "
         .. "/xrd import any time to check for one manually.",
