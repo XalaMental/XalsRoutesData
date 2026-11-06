@@ -10,6 +10,7 @@ ready-made data pack straight into Routes instead.
 
 - Import pre-collected node data directly into Xal's Xpedited Routes with one click.
 - Ships an initial pack of 1,361 gathering nodes across 31 zones - current expansion only for now, no Classic or older-expansion zones yet.
+- Includes a separate pack for WoW: Forever - a small starter set of 10 herb nodes for now, growing as more get farmed. The addon picks the right pack for the client you're on.
 - New data updates are offered right on the What's New splash the moment they land.
 
 ## Commands
