@@ -26,6 +26,8 @@ read_globals = {
     "IsControlKeyDown",
     "tinsert",
     "StaticPopup_Show",
+    "WOW_PROJECT_CAMELOT",
+    "WOW_PROJECT_ID",
     "GetCursorPosition",
 }
 
