@@ -1,5 +1,14 @@
 # Xal's Routes Data - Changelog
 
+## 1.3.0 - November 6, 2026
+
+---
+
+Started farming on WoW: Forever too, and it felt wrong leaving those players out - so Routes Data now has its own separate pack for Forever. It's tiny right now, just 10 herb nodes while I get going, but it'll grow the same way the Retail pack did. Thanks for being part of the Xal family - hope it saves you some legwork.
+
+### 🆕 New
+- A data pack for WoW: Forever - a small starter set of 10 herb nodes for now. The addon picks the right pack for whichever client you're on.
+
 ## 1.2.0 - October 25, 2026
 
 ---
