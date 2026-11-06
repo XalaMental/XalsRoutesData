@@ -7,10 +7,14 @@
 -- call into its namespace, since these are two separate addons):
 --   _G.XalsXpeditedRoutesAPI.ImportNodeData(nodesByMapID)
 --     -> returns { added = N, skipped = N, invalid = N }
--- `nodesByMapID` is addonTable.DataPack.nodes - the same [mapID] = { {x,y,type}, ... }
--- shape Routes already stores its own database in, so it can run each entry
--- straight through its own Helpers.FindNearbyNodeIndex duplicate scan before
--- inserting anything.
+-- `nodesByMapID` is the running client's pack's .nodes - the same
+-- [mapID] = { {x,y,type}, ... } shape Routes already stores its own database
+-- in, so it can run each entry straight through its own
+-- Helpers.FindNearbyNodeIndex duplicate scan before inserting anything.
+--
+-- Two packs ship: Data.lua for Retail and DataForever.lua for WoW: Forever
+-- (different map IDs). Each client has its own saved-variables file, so the
+-- imported-version number never mixes between them.
 
 local addonName, addonTable = ...
 addonTable.Import = {}
@@ -24,18 +28,26 @@ local function Say(msg)
     print(ACCENT .. "Xal's Routes Data:" .. RESET .. " " .. (msg or ""))
 end
 
+-- WOW_PROJECT_CAMELOT only exists on Forever, same check Routes itself uses.
+local IS_FOREVER = WOW_PROJECT_CAMELOT ~= nil and WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
+
+local function GetPack()
+    if IS_FOREVER then return addonTable.DataPackForever end
+    return addonTable.DataPack
+end
+
 -- True when the baked-in data pack is newer than whatever this player last
 -- actually imported - the same check both the WhatsNew splash button and
 -- the manual /xrd import command gate on.
 function Import:IsNewDataAvailable()
-    local pack = addonTable.DataPack
+    local pack = GetPack()
     local db = XalsRoutesDataDB
     if not pack or not db then return false end
     return (pack.version or 0) > (db.importedVersion or 0)
 end
 
 function Import:Run()
-    local pack = addonTable.DataPack
+    local pack = GetPack()
     if not pack then
         Say("no data pack loaded.")
         return
